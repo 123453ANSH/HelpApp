@@ -8,7 +8,7 @@
 
 import UIKit
 import SwiftUI
-
+import Firebase
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
