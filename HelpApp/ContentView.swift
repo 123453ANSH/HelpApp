@@ -20,7 +20,7 @@ struct ContentView: View {
     var body: some View {
         NavigationView{
             ZStack{
-                Image("Back").resizable().scaledToFill()
+                Image("Back.jpg").resizable().scaledToFill()
                 VStack{
                     Image(systemName: "person.crop.circle.fill").resizable().frame(width: 100, height: 100).padding()
                     
@@ -61,7 +61,7 @@ struct ContentView: View {
                         isActive: $isActive,
                         label: { Button(action: {
                             self.isActive = true
-                            addUser(name, email, password, username)
+                             self.addUser(self.name, self.email, self.password, self.username)
                         }, label: { Text("sign in") }) })
                 }.navigationBarTitle("Welcome")
             }
@@ -71,9 +71,9 @@ struct ContentView: View {
         let db = Firestore.firestore()
         var ref: DocumentReference? = nil
         ref = db.collection("users").addDocument(data: [
-            "email": \(email),
+            "email": "\(email)",
             "name": "\(name)",
-            "password": "\(password)"
+            "password": "\(password)",
             "username": "\(username)"
         ]) { err in
             if let err = err {
