@@ -7,6 +7,7 @@
 //
 
 
+
 import SwiftUI
 import FirebaseFirestore
 
@@ -30,8 +31,18 @@ extension View {
         self.modifier(ButtonModify())
     }
 }
-
 struct SignUpPage: View {
+    var body: some View {
+        Text("hi There!")
+    }
+}
+
+struct OpenningPage: View {
+    var body: some View {
+        Text("hi There!")
+    }
+}
+struct PostingPage: View {
     @State var msgContent = ""
     var user = ""
     var avatar = ""
@@ -64,15 +75,17 @@ struct SignUpPage: View {
                             .ButtonRender()
             
             Button(action: {
-            //    self.addPosting(self.msgContent) // not uploading message - look into this and watch youtube video to fix
+                print(TextPage.msgContent)
+                self.addPosting(TextPage.msgContent) // not uploading message - look into this and watch youtube video to fix
             }){
             Image(systemName: "paperplane")
                 .frame(width: 32.0, height: 32.0 )
             }.background(Color.red.opacity(50))
             }
             }.padding(.bottom, 20)
+            .navigationBarTitle("Help App")
             }
-        .navigationBarTitle("Help App")
+        
     }
         func addPosting(_ msgContent: String){
                 let db = Firestore.firestore()
@@ -135,7 +148,11 @@ struct TextView: UIViewRepresentable {
         init(_ parent: TextView) {
             self.parent = parent
         }
-       
+/*
+        static func return_text() -> String {
+            return self.textView.text
+        }
+       */
         func textViewDidBeginEditing(_ textView: UITextView) {
             if textView.textColor == .placeholderText {
                 textView.text = ""
@@ -196,21 +213,27 @@ struct ImagePage: View {
 }
 
 struct TextPage: View {
-    @State var msgContent = ""
+    @State static var msgContent = ""
+    static var textview: UITextView?
     var body: some View {
         NavigationView {
             ZStack {
-                TextView(text: $msgContent).frame(numLines: 6)
+                TextView(text: TextPage.$msgContent).frame(numLines: 6)
+        /*
+                if let textview != nil {
+                   textview = TextView(text: TextPage.$msgContent).frame(numLines: 6)
+                    }
+ */
         }
-    
     }
-}
+    }
 }
 
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        SignUpPage()
+        ContentView()
+        //SignUpPage()
     }
 }
 
