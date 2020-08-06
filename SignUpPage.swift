@@ -36,21 +36,23 @@ struct PageWithPosts: View {
 }
 
 // best way to completely change screens
-class ScreenSwitchBools: ObservableObject {
-    @Published var switchViews: Bool = true
+
+class switchPage: ObservableObject {
+    @Published var switchViews: Int = 0
+    @Published var msgContent: String = ""
 }
 struct ContentView: View {
-    @EnvironmentObject var switchBool: ScreenSwitchBools
+    @EnvironmentObject var switchViews: switchPage
     var body: some View {
-        print("yo")
         return Group { // figure out what this is
-            if(switchBool.switchViews){
-               // RealContentView()
-               SignUpPage()
-
+            if(switchViews.switchViews == 0){
+                SignUpPage()
+            }
+            else if (switchViews.switchViews == 1) {
+               SignIn()
             }
             else{
-                PageWithPosts()// need to do that environmental variable so all structs can use
+                PageWithPosts()
         }
         
     }
@@ -164,7 +166,7 @@ struct SignUpPage: View {
                 
                 }
                 
-                // need to add password verification
+                
                 
                 }.navigationBarTitle("Sign Up")
             
@@ -253,7 +255,7 @@ struct SignUpPage: View {
 }
 
     struct UserVerification: View {
-    @EnvironmentObject var switchBool: ScreenSwitchBools
+    @EnvironmentObject var switchView: switchPage
     @State private var Registered: Bool = false
     @State var Recepient: Bool = true
     @State var NotRecepient: Bool = true
@@ -334,8 +336,8 @@ struct SignUpPage: View {
                                                    Alert(title: Text("You have successfully registered for this app!"), message: Text("Click 'Register for App' to go to your homescreen!"))
                              }
                     Button(action: {
-                        self.switchBool.switchViews = false
-                        print(self.switchBool.switchViews)
+                        self.switchView.switchViews = 2
+                        print(self.switchView.switchViews)
                     }
                         ) {
                                 Text("Register for App")
