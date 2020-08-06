@@ -7,7 +7,6 @@
 //
 
 
-
 import SwiftUI
 import FirebaseFirestore
 
@@ -42,8 +41,10 @@ struct OpenningPage: View {
         Text("hi There!")
     }
 }
+
+
 struct PostingPage: View {
-    @State var msgContent = ""
+    @EnvironmentObject var msgdata: switchPage
     var user = ""
     var avatar = ""
     @State private var isImportant = true
@@ -53,7 +54,7 @@ struct PostingPage: View {
             VStack {
             Text("Please report your emergency here! You can write an explanation, provide pictures, and provide videos to detail the nature of your emergency. ")
                 
-            TextPage()
+                TextPage()
                 .frame(width: 300, height: 300, alignment: .topLeading)
                 
             Spacer()
@@ -75,8 +76,8 @@ struct PostingPage: View {
                             .ButtonRender()
             
             Button(action: {
-                print(TextPage.msgContent)
-                self.addPosting(TextPage.msgContent) // not uploading message - look into this and watch youtube video to fix
+                print(self.msgdata.msgContent)
+                self.addPosting(self.msgdata.msgContent)
             }){
             Image(systemName: "paperplane")
                 .frame(width: 32.0, height: 32.0 )
@@ -90,7 +91,7 @@ struct PostingPage: View {
         func addPosting(_ msgContent: String){
                 let db = Firestore.firestore()
         let user = db.collection("Emergency Messages").document("Ansh")
-                          user.setData(["Emergency message": "\(msgContent)"]) {
+                          user.setData(["Emergency message": "\(self.msgdata.msgContent)"]) {
                               (err) in
                               
                               if err != nil {
@@ -106,6 +107,7 @@ struct PostingPage: View {
 struct TextView: UIViewRepresentable {
     // multiline comment/posting
     typealias UIViewType = UITextView
+    @EnvironmentObject var textSaving: switchPage
     
     var placeholderText: String = "      Write Your Emergency Here"
     //"Please report your emergency here! You can write an explanation, provide pictures, and provide videos to detail the nature of your emergency."
@@ -124,7 +126,9 @@ struct TextView: UIViewRepresentable {
 
         return textView
     }
-    
+    func saveText(_ text: String) {
+        self.textSaving.msgContent = text
+    }
     func updateUIView(_ uiView: UITextView, context: UIViewRepresentableContext<TextView>) {
         
         
@@ -132,6 +136,7 @@ struct TextView: UIViewRepresentable {
     
         
         uiView.delegate = context.coordinator
+  
     }
     
     func frame(numLines: CGFloat) -> some View {
@@ -145,19 +150,20 @@ struct TextView: UIViewRepresentable {
     class Coordinator: NSObject, UITextViewDelegate {
         var parent: TextView
         
+       
         init(_ parent: TextView) {
             self.parent = parent
         }
-/*
-        static func return_text() -> String {
-            return self.textView.text
-        }
-       */
+
         func textViewDidBeginEditing(_ textView: UITextView) {
             if textView.textColor == .placeholderText {
                 textView.text = ""
                 textView.textColor = .label
             }
+        }
+        
+        func textViewDidChange(_ textView: UITextView) {
+             parent.textSaving.msgContent = textView.text
         }
         
         func textViewDidEndEditing(_ textView: UITextView) {
@@ -168,6 +174,22 @@ struct TextView: UIViewRepresentable {
         }
     }
 }
+
+struct TextPage: View {
+    @EnvironmentObject var msgdata: switchPage
+    @State var text: String = ""
+    static var textview: UITextView?
+   
+    var body: some View {
+        NavigationView {
+            ZStack {
+                TextView(text: $text).frame(numLines: 6)
+                
+        }
+    }
+    }
+}
+
 
 struct ImagePage: View {
     @State private var image: Image?
@@ -196,6 +218,7 @@ struct ImagePage: View {
                 
                 Button("Upload") {
                     //code to upload image to firebase
+                    // image uploads to firebase, but not through using a button; in future development, make uploading to firebase through this button
                 }
             }
         }
@@ -212,28 +235,11 @@ struct ImagePage: View {
     }
 }
 
-struct TextPage: View {
-    @State static var msgContent = ""
-    static var textview: UITextView?
-    var body: some View {
-        NavigationView {
-            ZStack {
-                TextView(text: TextPage.$msgContent).frame(numLines: 6)
-        /*
-                if let textview != nil {
-                   textview = TextView(text: TextPage.$msgContent).frame(numLines: 6)
-                    }
- */
-        }
-    }
-    }
-}
-
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
-        //SignUpPage()
+        //SignIn()
     }
 }
 
